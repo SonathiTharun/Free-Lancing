@@ -1,8 +1,15 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sun, Moon, LogIn, Menu, X } from 'lucide-react';
+import { Sun, Moon, LogIn, UserPlus, Menu, X } from 'lucide-react';
 
-export default function Navbar({ theme, onToggleTheme, onOpenLogin, activeSection }) {
+export default function Navbar({
+  theme,
+  onToggleTheme,
+  onOpenLogin,
+  onOpenRegister,
+  activeSection,
+  onSelectSection,
+}) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   // Strictly 4 navigation links requested by user
@@ -15,6 +22,9 @@ export default function Navbar({ theme, onToggleTheme, onOpenLogin, activeSectio
 
   const handleNavClick = (id) => {
     setMobileOpen(false);
+    if (onSelectSection) {
+      onSelectSection(id);
+    }
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
@@ -105,12 +115,27 @@ export default function Navbar({ theme, onToggleTheme, onOpenLogin, activeSectio
             </motion.div>
           </button>
 
+          {/* Register Workspace Button */}
+          {onOpenRegister && (
+            <button
+              type="button"
+              className="btn-glass btn-glass-sm"
+              onClick={onOpenRegister}
+              aria-label="Register Workspace"
+              id="nav-btn-register"
+            >
+              <UserPlus size={14} />
+              <span>Register</span>
+            </button>
+          )}
+
           {/* Pure Colourless Liquid Crystal Login Button */}
           <button
             type="button"
             className="btn-glass btn-glass-sm"
             onClick={onOpenLogin}
             aria-label="Client Login"
+            id="nav-btn-login"
           >
             <LogIn size={14} />
             <span>Login</span>
@@ -165,6 +190,35 @@ export default function Navbar({ theme, onToggleTheme, onOpenLogin, activeSectio
                 {item.label}
               </button>
             ))}
+
+            <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+              {onOpenRegister && (
+                <button
+                  type="button"
+                  className="btn-glass btn-glass-sm"
+                  onClick={() => {
+                    setMobileOpen(false);
+                    onOpenRegister();
+                  }}
+                  style={{ flex: 1, padding: '10px 14px' }}
+                >
+                  <UserPlus size={14} />
+                  <span>Register</span>
+                </button>
+              )}
+              <button
+                type="button"
+                className="btn-glass btn-glass-sm"
+                onClick={() => {
+                  setMobileOpen(false);
+                  onOpenLogin();
+                }}
+                style={{ flex: 1, padding: '10px 14px' }}
+              >
+                <LogIn size={14} />
+                <span>Login</span>
+              </button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

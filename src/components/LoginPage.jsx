@@ -8,6 +8,7 @@ export default function LoginPage({
   onToggleTheme,
   onBackToStudio,
   onLoginSuccess,
+  onNavigateToRegister,
   onShowToast,
 }) {
   const [username, setUsername] = useState('');
@@ -429,15 +430,37 @@ export default function LoginPage({
               </div>
             </div>
 
-            <div className="login-card-footer">
-              <span>Have a new project inquiry?</span>
-              <button
-                type="button"
-                className="link-btn"
-                onClick={onBackToStudio}
+            <div className="login-card-footer" style={{ flexDirection: 'column', gap: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                <span>Don't have a project console account?</span>
+                <button
+                  type="button"
+                  className="link-btn"
+                  onClick={onNavigateToRegister}
+                  id="link-go-to-register"
+                >
+                  Register Workspace →
+                </button>
+              </div>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  opacity: 0.8,
+                  fontSize: '0.8125rem',
+                }}
               >
-                Talk Directly to Founders →
-              </button>
+                <span>Have a new project inquiry instead?</span>
+                <button
+                  type="button"
+                  className="link-btn"
+                  onClick={onBackToStudio}
+                >
+                  Talk Directly to Founders
+                </button>
+              </div>
             </div>
           </div>
         </motion.div>

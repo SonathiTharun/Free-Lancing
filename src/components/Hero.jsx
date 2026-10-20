@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, ArrowRight, ShieldCheck, Zap, Users, Lock, ExternalLink } from 'lucide-react';
+import { Sparkles, ArrowRight, ShieldCheck, Zap, Users, Lock, ExternalLink, UserPlus, LogIn } from 'lucide-react';
 
-export default function Hero({ onExploreServices, onContactClick }) {
+export default function Hero({ onOpenRegister, onOpenLogin, onExploreServices, onContactClick }) {
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
 
   const handleMouseMove = (e) => {
@@ -55,7 +55,7 @@ export default function Hero({ onExploreServices, onContactClick }) {
           Radically transparent pricing. Handcrafted high-performance UI/UX. Delivered with speed and mathematical precision by a dedicated two-engineer studio with zero agency bloat.
         </motion.p>
 
-        {/* Pure Colourless Liquid Glass Button CTAs */}
+        {/* Pure Colourless Liquid Glass Button CTAs: Register and Login */}
         <motion.div
           className="hero-ctas"
           initial={{ opacity: 0, y: 20 }}
@@ -65,21 +65,21 @@ export default function Hero({ onExploreServices, onContactClick }) {
           <button
             type="button"
             className="btn-glass btn-glass-lg"
-            onClick={onExploreServices}
-            id="hero-cta-services"
+            onClick={onOpenRegister}
+            id="hero-cta-register"
           >
-            <Sparkles size={18} />
-            <span>Explore Signature Services</span>
+            <UserPlus size={18} />
+            <span>Register</span>
           </button>
 
           <button
             type="button"
             className="btn-glass btn-glass-lg"
-            onClick={onContactClick}
-            id="hero-cta-contact"
+            onClick={onOpenLogin}
+            id="hero-cta-login"
           >
-            <span>Start Project Blueprint</span>
-            <ArrowRight size={18} />
+            <LogIn size={18} />
+            <span>Login</span>
           </button>
         </motion.div>
 

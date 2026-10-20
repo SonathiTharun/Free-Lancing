@@ -7,12 +7,18 @@ import About from './components/About';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import LoginPage from './components/LoginPage';
+import RegisterPage from './components/RegisterPage';
 import ClientPortalModal from './components/ClientPortalModal';
 import Toast from './components/Toast';
 
 export default function App() {
   const [theme, setTheme] = useState(() => localStorage.getItem('trishul_theme') || 'light');
-  const [currentView, setCurrentView] = useState(() => (window.location.hash === '#login' ? 'login' : 'landing'));
+  const [currentView, setCurrentView] = useState(() => {
+    const hash = window.location.hash;
+    if (hash === '#login') return 'login';
+    if (hash === '#register' || hash === '#signup') return 'register';
+    return 'landing';
+  });
   const [activeSection, setActiveSection] = useState('hero');
   const [selectedService, setSelectedService] = useState('school');
   const [toastMessage, setToastMessage] = useState(null);
@@ -26,11 +32,15 @@ export default function App() {
     localStorage.setItem('trishul_theme', theme);
   }, [theme]);
 
-  // URL Hash Sync for Browser History (Supports back/forward navigation between #login and studio)
+  // URL Hash Sync for Browser History (Supports back/forward navigation between #login, #register, and studio)
   useEffect(() => {
     const handleHashChange = () => {
-      if (window.location.hash === '#login') {
+      const hash = window.location.hash;
+      if (hash === '#login') {
         setCurrentView('login');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (hash === '#register' || hash === '#signup') {
+        setCurrentView('register');
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
         setCurrentView('landing');
@@ -41,34 +51,38 @@ export default function App() {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
-  // Smooth High-Performance IntersectionObserver for 60fps Active Nav Tracking on Landing page
+  // Smooth, high-precision Active Nav Tracking on Landing page (Handles tall sections like Services)
   useEffect(() => {
     if (currentView !== 'landing') return;
 
     const sectionIds = ['hero', 'services', 'about', 'contact'];
-    const observerCallback = (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting && entry.intersectionRatio >= 0.25) {
-          setActiveSection(entry.target.id);
+
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + 180;
+
+      // Bottom of page check
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 50) {
+        setActiveSection('contact');
+        return;
+      }
+
+      for (let i = sectionIds.length - 1; i >= 0; i--) {
+        const el = document.getElementById(sectionIds[i]);
+        if (el) {
+          const top = el.offsetTop;
+          if (scrollPosition >= top) {
+            setActiveSection(sectionIds[i]);
+            break;
+          }
         }
-      });
+      }
     };
 
-    const observerOptions = {
-      root: null,
-      rootMargin: '-10% 0px -40% 0px',
-      threshold: [0.25, 0.5],
-    };
-
-    const observer = new IntersectionObserver(observerCallback, observerOptions);
-
-    sectionIds.forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
 
     return () => {
-      observer.disconnect();
+      window.removeEventListener('scroll', handleScroll);
     };
   }, [currentView]);
 
@@ -86,6 +100,7 @@ export default function App() {
   };
 
   const scrollTo = (id) => {
+    setActiveSection(id);
     const el = document.getElementById(id);
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' });
@@ -95,6 +110,12 @@ export default function App() {
   const handleNavigateToLogin = () => {
     window.location.hash = '#login';
     setCurrentView('login');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleNavigateToRegister = () => {
+    window.location.hash = '#register';
+    setCurrentView('register');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -131,6 +152,20 @@ export default function App() {
             setIsPortalModalOpen(true);
             showToast('Authenticated into Client Project Console');
           }}
+          onNavigateToRegister={handleNavigateToRegister}
+          onShowToast={showToast}
+        />
+      ) : currentView === 'register' ? (
+        /* Full-Page Dedicated VisionOS Register Page with 3D Cute Mascot */
+        <RegisterPage
+          theme={theme}
+          onToggleTheme={handleToggleTheme}
+          onBackToStudio={handleBackToStudio}
+          onRegisterSuccess={(data) => {
+            setIsPortalModalOpen(true);
+            showToast(`Workspace for "${data.orgName}" created! Opening Console`);
+          }}
+          onNavigateToLogin={handleNavigateToLogin}
           onShowToast={showToast}
         />
       ) : (
@@ -141,11 +176,15 @@ export default function App() {
             theme={theme}
             onToggleTheme={handleToggleTheme}
             onOpenLogin={handleNavigateToLogin}
+            onOpenRegister={handleNavigateToRegister}
             activeSection={activeSection}
+            onSelectSection={(id) => setActiveSection(id)}
           />
 
           <main id="main-content">
             <Hero
+              onOpenRegister={handleNavigateToRegister}
+              onOpenLogin={handleNavigateToLogin}
               onExploreServices={() => scrollTo('services')}
               onContactClick={() => scrollTo('contact')}
             />
