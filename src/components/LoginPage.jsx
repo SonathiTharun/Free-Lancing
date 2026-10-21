@@ -115,7 +115,11 @@ export default function LoginPage({
         setIsSubmitting(false);
         if (onShowToast) onShowToast('Authentication Verified! Welcome to Trishul Console');
         setTimeout(() => {
-          onLoginSuccess();
+          onLoginSuccess({
+            username,
+            orgName: username.includes('vidya') ? 'Vidya Mandir Academy' : username,
+            profileCompleted: !username.includes('incomplete'),
+          });
         }, 1400);
       } else {
         setMascotState('sad');
@@ -125,7 +129,7 @@ export default function LoginPage({
     }, 900);
   };
 
-  // 1-Click Fast Demo Login (Triggers Curious -> Happy Celebration)
+  // 1-Click Fast Demo Login (Returning Client with Active Projects)
   const handleQuickDemoSuccess = () => {
     setUsername('vidya-mandir-demo');
     setPassword('TS-SPRINT-2026');
@@ -136,9 +140,42 @@ export default function LoginPage({
     setTimeout(() => {
       setMascotState('happy');
       setIsSubmitting(false);
-      if (onShowToast) onShowToast('Demo Verified! Opening Vidya Mandir Academy Console');
+      if (onShowToast) onShowToast('Returning Client Verified! Opening Workspace directly');
       setTimeout(() => {
-        onLoginSuccess();
+        onLoginSuccess({
+          username: 'vidya-mandir-demo',
+          orgName: 'Vidya Mandir Academy',
+          fullName: 'Dr. Rajesh Sharma',
+          email: 'director@vidyamandir.edu.in',
+          industry: 'school',
+          profileCompleted: true,
+          activeProject: 'Vidya Mandir Excellence Academy',
+        });
+      }, 1400);
+    }, 900);
+  };
+
+  // 1-Click Incomplete Profile Demo Login (Opens Business Profile Setup)
+  const handleIncompleteDemoLogin = () => {
+    setUsername('new-client-incomplete');
+    setPassword('TS-NEW-2026');
+    setErrorMessage(null);
+    setIsSubmitting(true);
+    setMascotState('curious');
+
+    setTimeout(() => {
+      setMascotState('happy');
+      setIsSubmitting(false);
+      if (onShowToast) onShowToast('Incomplete Profile Detected! Opening Business Profile Setup');
+      setTimeout(() => {
+        onLoginSuccess({
+          username: 'new-client-incomplete',
+          orgName: 'Apex Logistics Hub',
+          fullName: 'Vikram Singhania',
+          email: 'vikram@apexlogistics.in',
+          industry: 'business',
+          profileCompleted: false,
+        });
       }, 1400);
     }, 900);
   };
@@ -413,10 +450,19 @@ export default function LoginPage({
                   type="button"
                   className="btn-glass btn-glass-sm"
                   onClick={handleQuickDemoSuccess}
-                  title="Tests: Curious -> Happy celebration & opens console"
+                  title="Returning Client: Opens Customer Dashboard directly with active projects"
                 >
                   <CheckCircle2 size={13} style={{ color: '#10B981' }} />
-                  <span>⚡ 1-Click Demo Login (Happy)</span>
+                  <span>⚡ Returning Client Login</span>
+                </button>
+                <button
+                  type="button"
+                  className="btn-glass btn-glass-sm"
+                  onClick={handleIncompleteDemoLogin}
+                  title="Incomplete Profile: Opens Step 2 Business Profile Setup"
+                >
+                  <Sparkles size={13} style={{ color: 'var(--accent-dot)' }} />
+                  <span>⚡ Incomplete Profile Login</span>
                 </button>
                 <button
                   type="button"
@@ -425,7 +471,7 @@ export default function LoginPage({
                   title="Tests: Curious -> Sad reaction & error alert"
                 >
                   <AlertCircle size={13} style={{ color: '#EF4444' }} />
-                  <span>⚠️ Test Invalid Key (Sad)</span>
+                  <span>⚠️ Test Invalid Key</span>
                 </button>
               </div>
             </div>

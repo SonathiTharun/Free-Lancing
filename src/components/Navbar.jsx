@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sun, Moon, LogIn, UserPlus, Menu, X } from 'lucide-react';
+import { Sun, Moon, LogIn, UserPlus, Menu, X, LogOut, LayoutDashboard } from 'lucide-react';
 
 export default function Navbar({
   theme,
@@ -9,6 +9,9 @@ export default function Navbar({
   onOpenRegister,
   activeSection,
   onSelectSection,
+  currentUser,
+  onNavigateToDashboard,
+  onLogout,
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -115,31 +118,76 @@ export default function Navbar({
             </motion.div>
           </button>
 
-          {/* Register Workspace Button */}
-          {onOpenRegister && (
-            <button
-              type="button"
-              className="btn-glass btn-glass-sm"
-              onClick={onOpenRegister}
-              aria-label="Register Workspace"
-              id="nav-btn-register"
-            >
-              <UserPlus size={14} />
-              <span>Register</span>
-            </button>
-          )}
+          {/* Authenticated Workspace Pill OR Guest Register / Login */}
+          {currentUser ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <button
+                type="button"
+                className="btn-glass btn-glass-sm"
+                onClick={onNavigateToDashboard}
+                id="nav-btn-workspace"
+                title={`Open Workspace for ${currentUser.orgName || 'your organization'}`}
+                style={{ gap: '7px' }}
+              >
+                <div
+                  style={{
+                    width: '18px',
+                    height: '18px',
+                    borderRadius: '50%',
+                    background: 'var(--accent-dot)',
+                    color: '#fff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '0.625rem',
+                    fontWeight: 800,
+                  }}
+                >
+                  {(currentUser.orgName || 'O').charAt(0).toUpperCase()}
+                </div>
+                <span>Workspace</span>
+              </button>
 
-          {/* Pure Colourless Liquid Crystal Login Button */}
-          <button
-            type="button"
-            className="btn-glass btn-glass-sm"
-            onClick={onOpenLogin}
-            aria-label="Client Login"
-            id="nav-btn-login"
-          >
-            <LogIn size={14} />
-            <span>Login</span>
-          </button>
+              <button
+                type="button"
+                className="btn-glass btn-glass-sm"
+                onClick={onLogout}
+                aria-label="Sign Out"
+                title="Sign Out Workspace"
+                style={{ padding: '8px 12px' }}
+              >
+                <LogOut size={13} style={{ color: 'rgba(239, 68, 68, 0.85)' }} />
+              </button>
+            </div>
+          ) : (
+            <>
+              {/* Register Workspace Button */}
+              {onOpenRegister && (
+                <button
+                  type="button"
+                  className="btn-glass btn-glass-sm"
+                  onClick={onOpenRegister}
+                  aria-label="Register Workspace"
+                  id="nav-btn-register"
+                >
+                  <UserPlus size={14} />
+                  <span>Register</span>
+                </button>
+              )}
+
+              {/* Pure Colourless Liquid Crystal Login Button */}
+              <button
+                type="button"
+                className="btn-glass btn-glass-sm"
+                onClick={onOpenLogin}
+                aria-label="Client Login"
+                id="nav-btn-login"
+              >
+                <LogIn size={14} />
+                <span>Login</span>
+              </button>
+            </>
+          )}
 
           {/* Mobile Menu Toggle */}
           <button
@@ -192,32 +240,62 @@ export default function Navbar({
             ))}
 
             <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-              {onOpenRegister && (
-                <button
-                  type="button"
-                  className="btn-glass btn-glass-sm"
-                  onClick={() => {
-                    setMobileOpen(false);
-                    onOpenRegister();
-                  }}
-                  style={{ flex: 1, padding: '10px 14px' }}
-                >
-                  <UserPlus size={14} />
-                  <span>Register</span>
-                </button>
+              {currentUser ? (
+                <>
+                  <button
+                    type="button"
+                    className="btn-glass btn-glass-sm"
+                    onClick={() => {
+                      setMobileOpen(false);
+                      onNavigateToDashboard();
+                    }}
+                    style={{ flex: 1, padding: '10px 14px' }}
+                  >
+                    <LayoutDashboard size={14} />
+                    <span>Open Workspace</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-glass btn-glass-sm"
+                    onClick={() => {
+                      setMobileOpen(false);
+                      onLogout();
+                    }}
+                    style={{ padding: '10px 14px', color: 'rgba(239, 68, 68, 0.9)' }}
+                  >
+                    <LogOut size={14} />
+                  </button>
+                </>
+              ) : (
+                <>
+                  {onOpenRegister && (
+                    <button
+                      type="button"
+                      className="btn-glass btn-glass-sm"
+                      onClick={() => {
+                        setMobileOpen(false);
+                        onOpenRegister();
+                      }}
+                      style={{ flex: 1, padding: '10px 14px' }}
+                    >
+                      <UserPlus size={14} />
+                      <span>Register</span>
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    className="btn-glass btn-glass-sm"
+                    onClick={() => {
+                      setMobileOpen(false);
+                      onOpenLogin();
+                    }}
+                    style={{ flex: 1, padding: '10px 14px' }}
+                  >
+                    <LogIn size={14} />
+                    <span>Login</span>
+                  </button>
+                </>
               )}
-              <button
-                type="button"
-                className="btn-glass btn-glass-sm"
-                onClick={() => {
-                  setMobileOpen(false);
-                  onOpenLogin();
-                }}
-                style={{ flex: 1, padding: '10px 14px' }}
-              >
-                <LogIn size={14} />
-                <span>Login</span>
-              </button>
             </div>
           </motion.div>
         )}
